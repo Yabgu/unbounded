@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(unbounded VERSION 0.1.0)
 
+cmake_policy(SET CMP0057 NEW)
+
 find_package(LibXml2 REQUIRED)
 
 include_directories(include)
@@ -18,9 +20,8 @@ enable_testing()
 find_package(GTest CONFIG REQUIRED)
 include(GoogleTest)
 
-add_test(AllTestsInMain main)
-
 add_executable(XmlDomParserTests test/Xml/Dom/TestDocument.cpp)
+
 gtest_add_tests(XmlDomParserTests "" AUTO)
 
 target_link_libraries(XmlDomParserTests PRIVATE unbounded GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main)
