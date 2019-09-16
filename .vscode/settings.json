@@ -80,5 +80,8 @@
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
     "editor.detectIndentation": false,
-    "catch2TestExplorer.executables": "build/Debug/XmlDomParserTests.exe"
+    "catch2TestExplorer.executables": [
+      "build/XmlDomParserTests",
+      "build/Debug/XmlDomParserTests.exe"
+    ]
 }

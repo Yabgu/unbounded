@@ -334,8 +334,7 @@ Node::Attribute *Node::Attribute::NamePropertyType::get_parent() const
 bool Node::Attribute::NamePropertyType::
 operator==(const std::string &rhs) const
 {
-  return std::strncmp(this->get_parent()->_handler->get_name(), rhs.c_str(),
-                      rhs.length()) == 0;
+  return std::strncmp(this->get_parent()->_handler->get_name(), rhs.c_str(), rhs.length()) == 0;
 }
 
 bool Node::Attribute::NamePropertyType::operator==(const char *rhs) const
@@ -496,29 +495,26 @@ void Node::AttributesPropertyType::push_back(const Node::Attribute &attr)
   this->get_parent()->_handler->push_back_attribute(attr);
 }
 
-void Node::AttributesPropertyType::emplace_back(const std::string &name,
-                                                const std::string &value)
+void Node::AttributesPropertyType::push_back(const std::string &name, const std::string &value)
 {
-  this->emplace_back(name.c_str(), name.length(), value.c_str(),
-                     value.length());
+  this->push_back(name.c_str(), name.length(), value.c_str(), value.length());
 }
 
-void Node::AttributesPropertyType::emplace_back(const char *name,
-                                                std::size_t name_size,
-                                                const char *value,
-                                                std::size_t value_size)
+void Node::AttributesPropertyType::push_back(
+  const char *name,
+  std::size_t name_size,
+  const char *value,
+  std::size_t value_size)
 {
   if (this->get_parent()->_handler == nullptr)
   {
     throw std::runtime_error("Null object");
   }
 
-  this->get_parent()->_handler->push_back_attribute(name, name_size, value,
-                                                    value_size);
+  this->get_parent()->_handler->push_back_attribute(name, name_size, value, value_size);
 }
 
-void Node::AttributesPropertyType::emplace_back(const char *name,
-                                                const char *value)
+void Node::AttributesPropertyType::push_back(const char *name, const char *value)
 {
   if (this->get_parent()->_handler == nullptr)
   {

@@ -8,7 +8,7 @@ namespace
 {
 
 // Test simple XML creation and string casting
-TEST(XmlDomParser, DocumentToString)
+TEST(Document, DocumentToString)
 {
   Document document("1.0");
   document.root_node = Node("test", "content");
@@ -20,7 +20,17 @@ TEST(XmlDomParser, DocumentToString)
   EXPECT_EQ(asString2, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>content<pushBack/></test>");
 }
 
-TEST(XmlDomParser, push_back)
+TEST(Document, DocumentFromString)
+{
+  Document document;
+  document.parse("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>content</test>");
+  string asString = (string)document;
+  EXPECT_EQ(document.root_node.name, "test");
+  EXPECT_EQ(document.root_node.content, "content");
+  EXPECT_EQ(asString, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>content</test>");
+}
+
+TEST(Node, push_back)
 {
   Document document("1.0");
   document.root_node = Node("test", "content");
@@ -29,13 +39,23 @@ TEST(XmlDomParser, push_back)
   EXPECT_EQ(asString, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>content<pushBack/></test>");
 }
 
-TEST(XmlDomParser, push_front)
+TEST(Node, push_front)
 {
   Document document("1.0");
   document.root_node = Node("test", "content");
   document.root_node.push_front(Node("pushFront", "dummy"));
   string asString = (string)document;
   EXPECT_EQ(asString, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test><pushFront>dummy</pushFront>content</test>");
+}
+
+TEST(NodeAttributes, push_back)
+{
+  Document document("1.0");
+  Node root_node("root");
+  root_node.attributes.push_back("test", "testvalue");
+  document.root_node = root_node;
+  string asString = (string)document;
+  EXPECT_EQ(asString, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root test=\"testvalue\"/>");
 }
 
 } // namespace

@@ -423,17 +423,17 @@ public:
      * Add new attribute to current attributes list
      */
     void push_back(const Node::Attribute &);
-    void emplace_back(const std::string &name, const std::string &value);
-    void emplace_back(const char *name, std::size_t name_size,
+    void push_back(const std::string &name, const std::string &value);
+    void push_back(const char *name, std::size_t name_size,
                       const char *value, std::size_t value_size);
-    void emplace_back(const char *name, const char *value);
+    void push_back(const char *name, const char *value);
 
     template <std::size_t namesize, std::size_t valuesize>
-    void emplace_back(const char (&name)[namesize],
+    void push_back(const char (&name)[namesize],
                       const char (&value)[valuesize])
     {
       static_assert(namesize > 0, "Name cannot be empty");
-      this->emplace_back(name, namesize, value, valuesize);
+      this->push_back(name, namesize, value, valuesize);
     }
 
     /**
