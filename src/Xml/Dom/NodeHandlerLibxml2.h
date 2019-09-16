@@ -203,7 +203,6 @@ public:
       return std::string();
     }
 
-    std::shared_ptr<const char> content(_cont, xmlFree);
     std::string result(_cont);
     xmlFree(_cont);
 

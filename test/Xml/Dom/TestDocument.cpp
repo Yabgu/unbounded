@@ -54,8 +54,12 @@ TEST(NodeAttributes, push_back)
   Node root_node("root");
   root_node.attributes.push_back("test", "testvalue");
   document.root_node = root_node;
-  string asString = (string)document;
-  EXPECT_EQ(asString, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root test=\"testvalue\"/>");
+  EXPECT_EQ((string)document, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root test=\"testvalue\"/>");
+
+  root_node.attributes.push_back("test1", "randomvalue");
+  root_node.attributes.push_back("test2", "value");
+
+  EXPECT_EQ((string)document, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root test=\"testvalue\" test1=\"randomvalue\" test2=\"value\"/>");
 }
 
 } // namespace
