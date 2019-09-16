@@ -3,13 +3,7 @@
  * @file Document.cpp
  * @date Oct 10, 2012
  * @author Abdurrahim Cakar <abdurrahimcakar@gmail.com>
- * @brief Xml document class
- *
- * Xml document class is designed C++ to ease up development with xml document
- * objects.
- *
- * Maybe I should create an opensource project for just xml. It is
- * getting bigger and documenting this started to took so much time.
+ * @brief Xml dom parser document class
  */
 
 #include <Xml/Dom/Document.h>
