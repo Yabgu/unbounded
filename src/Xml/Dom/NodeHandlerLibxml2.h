@@ -368,7 +368,7 @@ public:
     return _get_child(node);
   }
 
-  std::size_t get_size() const
+  inline std::size_t get_count() const
   {
     std::size_t result = 0;
 
@@ -569,8 +569,7 @@ public:
   std::size_t get_attributes_size() const
   {
     std::size_t result = 0;
-    for (xmlAttrPtr attr = this->_handler->properties; attr != NULL;
-         attr = attr->next)
+    for (xmlAttrPtr attr = this->_handler->properties; attr != NULL; attr = attr->next)
     {
       ++result;
     }

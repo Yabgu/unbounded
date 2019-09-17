@@ -115,19 +115,19 @@ const std::string &Node::NamePropertyType::operator=(const std::string &rhs)
   return rhs;
 }
 
-Node *Node::SizePropertyType::get_parent() const
+Node *Node::CountPropertyType::get_parent() const
 {
-  static const int offset = offsetof(Node, size);
+  static const int offset = offsetof(Node, count);
   return (Node *)(((uint8_t *)this) - offset);
 }
 
-Node::SizePropertyType::operator std::size_t() const
+Node::CountPropertyType::operator std::size_t() const
 {
   if (this->get_parent()->_handler == nullptr)
   {
     throw std::runtime_error("Null object");
   }
-  return this->get_parent()->_handler->get_size();
+  return this->get_parent()->_handler->get_count();
 }
 
 Node::iterator Node::begin()
@@ -393,7 +393,7 @@ Node::Attribute::ValuePropertyType::operator const char *() const
 
 /////////////// END Node attribute
 
-std::size_t Node::AttributesPropertyType::get_size() const
+std::size_t Node::AttributesPropertyType::get_count() const
 {
   if (this->get_parent()->_handler == nullptr)
   {
@@ -410,15 +410,15 @@ Node *Node::AttributesPropertyType::get_parent() const
 }
 
 Node::AttributesPropertyType *
-Node::AttributesPropertyType::SizePropertyType::get_parent() const
+Node::AttributesPropertyType::CountPropertyType::get_parent() const
 {
-  static const int offset = offsetof(Node::AttributesPropertyType, size);
+  static const int offset = offsetof(Node::AttributesPropertyType, count);
   return (Node::AttributesPropertyType *)(((uint8_t *)this) - offset);
 }
 
-Node::AttributesPropertyType::SizePropertyType::operator std::size_t() const
+Node::AttributesPropertyType::CountPropertyType::operator std::size_t() const
 {
-  return this->get_parent()->get_size();
+  return this->get_parent()->get_count();
 }
 
 Node::Attribute Node::AttributesPropertyType::operator[](int index) const

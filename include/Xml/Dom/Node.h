@@ -153,24 +153,24 @@ public:
   NamePropertyType name;
 
   /**
-   * Size property
+   * Count property for number of first child nodes
    */
-  class SizePropertyType
+  class CountPropertyType
   {
     Node *get_parent() const;
 
   public:
     /**
-     * Getter of size property
+     * Getter of count property
      *
-     * @return Returns content size of current node
+     * @return Returns number of first child nodes
      */
     operator std::size_t() const;
   };
 
   friend class SizePropertyType;
-  /// Size property object. Just an interface to node class
-  SizePropertyType size;
+  /// Count property object. Just an interface to node class
+  CountPropertyType count;
 
 public:
   /**
@@ -377,12 +377,12 @@ public:
   class AttributesPropertyType
   {
     Node *get_parent() const;
-    std::size_t get_size() const;
+    std::size_t get_count() const;
     bool get_is_empty() const;
 
   public:
-    /// Node::Attributes::Size property class
-    class SizePropertyType
+    /// Node::Attributes::Count property class
+    class CountPropertyType
     {
       Node::AttributesPropertyType *get_parent() const;
 
@@ -391,8 +391,8 @@ public:
     };
 
     friend class SizePropertyType;
-    /// Size property object. Just an interface to node class
-    SizePropertyType size;
+    /// Count property object. Just an interface to node class
+    CountPropertyType count;
 
     /// Get attribute by index
     Node::Attribute operator[](int index) const;
@@ -429,8 +429,7 @@ public:
     void push_back(const char *name, const char *value);
 
     template <std::size_t namesize, std::size_t valuesize>
-    void push_back(const char (&name)[namesize],
-                      const char (&value)[valuesize])
+    void push_back(const char (&name)[namesize], const char (&value)[valuesize])
     {
       static_assert(namesize > 0, "Name cannot be empty");
       this->push_back(name, namesize, value, valuesize);
