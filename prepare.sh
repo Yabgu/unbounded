@@ -3,8 +3,12 @@ set -e
 
 cd $(dirname "$BASH_SOURCE")
 
-if [ ! -d third-party/vcpkg/vcpkg ]; then
+if [ ! -d third-party ]; then
   mkdir third-party
+fi
+
+if [ ! -d third-party/vcpkg ]; then
+  
   pushd third-party
   git clone https://github.com/Microsoft/vcpkg.git
   popd

@@ -17,6 +17,6 @@ pipeline {
       steps {
         sh 'cmake --build ./build --target test'
       }
-    }
+    }BuildBuild
   }
 }
