@@ -4,9 +4,11 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh '''set -e
-          prepare.sh
-          cmake --build ./build'''
+        sh '''
+          set -e
+          bash prepare.sh
+          cmake --build ./build
+          '''
       }
     }
     stage('Test') {
