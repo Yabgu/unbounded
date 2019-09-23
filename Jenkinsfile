@@ -2,13 +2,15 @@ pipeline {
   agent any
 
   stages {
+    stage('Prepare') {
+      steps {
+        sh 'bash prepare.sh'
+      }
+    }
+
     stage('Build') {
       steps {
-        sh '''
-          set -e
-          bash prepare.sh
-          cmake --build ./build
-          '''
+        sh 'cmake --build ./build'
       }
     }
     stage('Test') {
