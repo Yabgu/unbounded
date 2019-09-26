@@ -41,6 +41,24 @@ TEST(Node, push_back)
   EXPECT_EQ(asString, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>content<pushBack/></test>");
 }
 
+TEST(Node, remove)
+{
+  Document document("1.0");
+  document.root_node = Node("test", "content");
+  EXPECT_EQ(document.root_node.count, 0);
+
+  Node test_node("pushBack");
+
+  document.root_node.push_back(test_node);
+  EXPECT_EQ((string)document, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>content<pushBack/></test>");
+  EXPECT_EQ(document.root_node.count, 1);
+
+  document.root_node.remove(test_node);
+  EXPECT_EQ(document.root_node.count, 0);
+
+  EXPECT_EQ((string)document, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test>content</test>");
+}
+
 TEST(Node, push_front)
 {
   Document document("1.0");
