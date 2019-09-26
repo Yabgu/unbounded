@@ -399,16 +399,8 @@ public:
     {
       if (node._handler->_handler == i)
       {
-        for (Node &n1 : nodes)
-        {
-          if (n1._handler->_handler == i)
-          {
-            node._handler->is_owner = true;
-            xmlUnlinkNode(i);
-            nodes.remove(n1);
-            return;
-          }
-        }
+        node._handler->is_owner = true;
+        xmlUnlinkNode(i);
       }
     }
   }
