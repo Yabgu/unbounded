@@ -29,16 +29,16 @@ static Node empty_node;
 
 class Document;
 
-class Node::_Handler
+class Node::Handler
 {
 public:
   class iterator;
-  friend class Node::_Handler::iterator;
+  friend class Node::Handler::iterator;
 
 private:
   friend class ::un::Xml::Dom::Node;
   friend class ::un::Xml::Dom::Document;
-  xmlNodePtr _handler;
+  xmlNodePtr handler;
   bool is_owner;
 
   std::list<Node> nodes;
@@ -106,13 +106,13 @@ private:
 
   Node &_get_child(xmlNodePtr node)
   {
-    if (this->_handler->children == NULL)
+    if (this->handler->children == NULL)
     {
       throw std::runtime_error("Node has no children");
     }
 
     bool weHave = false;
-    for (xmlNodePtr i = _handler->children; i != NULL; i = i->next)
+    for (xmlNodePtr i = handler->children; i != NULL; i = i->next)
     {
       if (node == i)
       {
@@ -130,15 +130,14 @@ private:
     {
       for (Node &n : nodes)
       {
-        if (n._handler->_handler == node)
+        if (n.handler->handler == node)
         {
           return n;
         }
       }
     }
 
-    Node result(
-        std::shared_ptr<Node::_Handler>(new Node::_Handler(node, false)));
+    Node result(std::shared_ptr<Node::Handler>(new Node::Handler(node, false)));
 
     nodes.push_back(result);
 
@@ -146,21 +145,22 @@ private:
   }
 
 public:
-  _Handler() : _handler(NULL), is_owner(false) {}
+  Handler()
+    : handler(NULL), is_owner(false) {}
 
-  _Handler(xmlNodePtr node, bool is_owner)
-      : _handler(node), is_owner(is_owner) {}
+  Handler(xmlNodePtr node, bool is_owner)
+    : handler(node), is_owner(is_owner) {}
 
-  explicit _Handler(const char *name) : _handler(NULL), is_owner(false)
+  explicit Handler(const char *name) : handler(NULL), is_owner(false)
   {
     if (name == NULL)
     {
       throw std::runtime_error("Cannot create nameless node");
     }
 
-    _handler = xmlNewNode(NULL, BAD_CAST name);
+    handler = xmlNewNode(NULL, BAD_CAST name);
 
-    if (_handler == NULL)
+    if (handler == NULL)
     {
       throw std::runtime_error("xmlNewNode failed");
     }
@@ -168,36 +168,32 @@ public:
     this->is_owner = true;
   }
 
-  _Handler(const char *name, const char *content)
-      : _handler(NULL), is_owner(false)
+  Handler(const char *name, const char *content)
+      : handler(NULL), is_owner(false)
   {
-    _handler = xmlNewNode(NULL, BAD_CAST name);
+    handler = xmlNewNode(NULL, BAD_CAST name);
 
-    if (_handler == NULL)
+    if (handler == NULL)
     {
       throw std::runtime_error("xmlNewNode failed");
     }
 
-    xmlNodeSetContent(_handler, BAD_CAST content);
+    xmlNodeSetContent(handler, BAD_CAST content);
 
     this->is_owner = true;
   }
 
-  ~_Handler()
+  ~Handler()
   {
-    if (this->is_owner && _handler != NULL)
+    if (this->is_owner && handler != NULL)
     {
-      // After owner mechanism we don´t need unlinking
-      /*for (xmlNodePtr c = _handler->children; c != NULL; c = c->next)
-       xmlUnlinkNode(c);*/
-
-      xmlFreeNode(_handler);
+      xmlFreeNode(handler);
     }
   }
 
   const std::string get_content() const
   {
-    char *_cont = reinterpret_cast<char *>(xmlNodeGetContent(_handler));
+    char *_cont = reinterpret_cast<char *>(xmlNodeGetContent(handler));
     if (_cont == NULL)
     {
       return std::string();
@@ -211,12 +207,12 @@ public:
 
   void set_content(const std::string &content)
   {
-    xmlNodeSetContent(_handler, BAD_CAST content.c_str());
+    xmlNodeSetContent(handler, BAD_CAST content.c_str());
   }
 
   void set_content(const char *cont)
   {
-    xmlNodeSetContent(_handler, BAD_CAST cont);
+    xmlNodeSetContent(handler, BAD_CAST cont);
   }
 
   void set_content(const char *cont, std::size_t size)
@@ -226,33 +222,35 @@ public:
 
   const std::string get_name() const
   {
-    if (_handler->name != NULL)
+    if (handler->name != NULL)
     {
-		return std::string(reinterpret_cast<const char *>(_handler->name));
+		  return std::string(reinterpret_cast<const char *>(handler->name));
     }
 
-	return std::string();
+	  return std::string();
   }
 
   void set_name(const std::string &name)
   {
-    xmlNodeSetName(_handler, BAD_CAST name.c_str());
+    xmlNodeSetName(handler, BAD_CAST name.c_str());
   }
 
   class iterator : public Node::iterator_base
   {
   private:
-    Node::_Handler *_current_node;
+    Node::Handler *_current_node;
     xmlNodePtr _ptr;
     xmlNodePtr _first_ptr;
     xmlNodePtr _last_ptr;
     bool _is_last;
 
   public:
-    iterator(Node::_Handler *current_node, xmlNodePtr ptr, xmlNodePtr first_ptr,
-             xmlNodePtr last_ptr, bool is_last)
-        : _current_node(current_node), _ptr(ptr), _first_ptr(first_ptr),
-          _last_ptr(last_ptr), _is_last(is_last)
+    iterator(Node::Handler *current_node, xmlNodePtr ptr, xmlNodePtr first_ptr, xmlNodePtr last_ptr, bool is_last)
+      : _current_node(current_node),
+        _ptr(ptr),
+        _first_ptr(first_ptr),
+        _last_ptr(last_ptr),
+        _is_last(is_last)
     {
       if (!is_last && ptr != NULL && xmlIsBlankNode(_ptr))
       {
@@ -328,14 +326,14 @@ public:
 
   Node::iterator begin()
   {
-    return Node::iterator(new Node::_Handler::iterator(
-        this, _handler->children, _handler->children, _handler->last, false));
+    return Node::iterator(new Node::Handler::iterator(
+        this, handler->children, handler->children, handler->last, false));
   }
 
   Node::iterator end()
   {
-    return Node::iterator(new Node::_Handler::iterator(
-        this, NULL, _handler->children, _handler->last, true));
+    return Node::iterator(new Node::Handler::iterator(
+        this, NULL, handler->children, handler->last, true));
   }
 
   Node &get_child(int index)
@@ -344,13 +342,13 @@ public:
     {
       throw std::runtime_error("negative index");
     }
-    xmlNodePtr node = get_child(this->_handler, index);
+    xmlNodePtr node = get_child(this->handler, index);
     return _get_child(node);
   }
 
   Node &get_child(const char *const key)
   {
-    xmlNodePtr node = get_child_rec(this->_handler, key);
+    xmlNodePtr node = get_child_rec(this->handler, key);
     if (node == NULL)
     {
       return empty_node;
@@ -360,7 +358,7 @@ public:
 
   Node &get_child(const std::string &key)
   {
-    xmlNodePtr node = get_child_rec(this->_handler, key.c_str());
+    xmlNodePtr node = get_child_rec(this->handler, key.c_str());
     if (node == NULL)
     {
       return empty_node;
@@ -372,7 +370,7 @@ public:
   {
     std::size_t result = 0;
 
-    for (xmlNodePtr i = _handler->children; i != NULL; i = i->next)
+    for (xmlNodePtr i = handler->children; i != NULL; i = i->next)
     {
       if (!xmlNodeIsText(i))
       {
@@ -384,22 +382,21 @@ public:
 
   bool is_equal(const Node &rhs) const
   {
-    return this->_handler == rhs._handler->_handler;
+    return this->handler == rhs.handler->handler;
   }
 
   void remove(const Node &node)
   {
-    if (node._handler->is_owner)
+    if (node.handler->is_owner)
     {
-      throw std::runtime_error(
-          "Node is not belong(child node of) to any document or node");
+      throw std::runtime_error("Node is not belong(child node of) to any document or node");
     }
 
-    for (xmlNodePtr i = _handler->children; i != NULL; i = i->next)
+    for (xmlNodePtr i = handler->children; i != NULL; i = i->next)
     {
-      if (node._handler->_handler == i)
+      if (node.handler->handler == i)
       {
-        node._handler->is_owner = true;
+        node.handler->is_owner = true;
         xmlUnlinkNode(i);
       }
     }
@@ -407,20 +404,20 @@ public:
 
   void push_back(const Node &node)
   {
-    if (!node._handler->is_owner)
+    if (!node.handler->is_owner)
     {
       throw std::runtime_error("Node is owned by another document or node");
     }
 
-    if (xmlAddChild(this->_handler, node._handler->_handler) !=
-        node._handler->_handler)
+    if (xmlAddChild(this->handler, node.handler->handler) !=
+        node.handler->handler)
     {
       throw std::runtime_error("xmlAddChild failed");
     }
     else
     {
-      node._handler->is_owner = false;
-      if (!node._handler.unique())
+      node.handler->is_owner = false;
+      if (!node.handler.unique())
       {
         nodes.push_back(node);
       }
@@ -429,22 +426,22 @@ public:
 
   void push_front(const Node &node)
   {
-    if (!node._handler->is_owner)
+    if (!node.handler->is_owner)
     {
       throw std::runtime_error("Node is owned by another document or node");
     }
 
-    if (this->_handler->children == NULL)
+    if (this->handler->children == NULL)
     {
       this->push_back(node);
     }
     else
     {
-      if (xmlAddPrevSibling(this->_handler->children,
-                            node._handler->_handler) != NULL)
+      if (xmlAddPrevSibling(this->handler->children,
+                            node.handler->handler) != NULL)
       {
-        node._handler->is_owner = false;
-        if (!node._handler.unique())
+        node.handler->is_owner = false;
+        if (!node.handler.unique())
         {
           nodes.push_back(node);
         }
@@ -458,14 +455,14 @@ public:
 
   Node &pop_back()
   {
-    Node &last = this->_get_child(this->_handler->last);
+    Node &last = this->_get_child(this->handler->last);
     this->remove(last);
     return last;
   }
 
   Node &pop_front()
   {
-    Node &first = this->_get_child(this->_handler->children);
+    Node &first = this->_get_child(this->handler->children);
     this->remove(first);
     return first;
   }
@@ -473,52 +470,52 @@ public:
   class Attribute : public Node::AttributeBase
   {
   private:
-    xmlAttrPtr _handler;
-    friend class Node::_Handler;
+    xmlAttrPtr handler;
+    friend class Node::Handler;
     bool is_owner; // true if attribute is removed from node
 
   public:
     explicit Attribute(xmlAttrPtr handler, bool owner = false)
-        : _handler(handler), is_owner(owner) {}
+        : handler(handler), is_owner(owner) {}
 
     ~Attribute()
     {
       if (this->is_owner)
       {
-        xmlFree(this->_handler);
+        xmlFree(this->handler);
       }
     }
 
     virtual const char *get_name() const
     {
-      return (const char *)this->_handler->name;
+      return (const char *)this->handler->name;
     }
 
     virtual const char *get_value() const
     {
-      return (const char *)this->_handler->children->content;
+      return (const char *)this->handler->children->content;
     }
 
     virtual void set_value(const char *val)
     {
-      xmlNodeSetContent(this->_handler->children, BAD_CAST val);
+      xmlNodeSetContent(this->handler->children, BAD_CAST val);
     }
 
     virtual void set_value(const std::string &val)
     {
-      xmlNodeSetContent(this->_handler->children, BAD_CAST val.c_str());
+      xmlNodeSetContent(this->handler->children, BAD_CAST val.c_str());
     }
   };
 
   Node::Attribute get_attribute_from_name(const char *name)
   {
-    for (xmlAttrPtr attr = this->_handler->properties; attr != NULL;
+    for (xmlAttrPtr attr = this->handler->properties; attr != NULL;
          attr = attr->next)
     {
       if (xmlStrcmp(attr->name, BAD_CAST name) == 0)
       {
-        return Node::Attribute(std::shared_ptr<Node::_Handler::Attribute>(
-            new Node::_Handler::Attribute(attr)));
+        return Node::Attribute(std::shared_ptr<Node::Handler::Attribute>(
+            new Node::Handler::Attribute(attr)));
       }
     }
 
@@ -533,7 +530,7 @@ public:
 
   Node::Attribute get_attribute_from_index(int index)
   {
-    xmlAttrPtr attr = this->_handler->properties;
+    xmlAttrPtr attr = this->handler->properties;
 
     if (index < 0)
     {
@@ -549,19 +546,19 @@ public:
       attr = attr->next;
     }
 
-    return Node::Attribute(std::shared_ptr<Node::_Handler::Attribute>(
-        new Node::_Handler::Attribute(attr)));
+    return Node::Attribute(std::shared_ptr<Node::Handler::Attribute>(
+        new Node::Handler::Attribute(attr)));
   }
 
   bool is_attributes_empty() const
   {
-    return this->_handler->properties == NULL;
+    return this->handler->properties == NULL;
   }
 
   std::size_t get_attributes_size() const
   {
     std::size_t result = 0;
-    for (xmlAttrPtr attr = this->_handler->properties; attr != NULL; attr = attr->next)
+    for (xmlAttrPtr attr = this->handler->properties; attr != NULL; attr = attr->next)
     {
       ++result;
     }
@@ -572,7 +569,7 @@ public:
   void push_back_attribute(const Node::Attribute &attr)
   {
     xmlAttrPtr newattr = xmlNewProp(
-        this->_handler, (const xmlChar *)attr.name.operator const char *(),
+        this->handler, (const xmlChar *)attr.name.operator const char *(),
         (const xmlChar *)attr.value.operator const char *());
 
     if (newattr == NULL)
@@ -584,7 +581,7 @@ public:
   void push_back_attribute(const std::string &name, const std::string &value)
   {
     xmlAttrPtr newattr =
-        xmlNewProp(this->_handler, (const xmlChar *)name.c_str(),
+        xmlNewProp(this->handler, (const xmlChar *)name.c_str(),
                    (const xmlChar *)value.c_str());
 
     if (newattr == NULL)
@@ -593,8 +590,7 @@ public:
     }
   }
 
-  void push_back_attribute(const char *name, std::size_t namesize,
-                           const char *value, std::size_t valuesize)
+  void push_back_attribute(const char *name, std::size_t namesize, const char *value, std::size_t valuesize)
   {
     std::string _name(name, namesize);
     std::string _value(value, valuesize);
@@ -604,8 +600,7 @@ public:
 
   void push_back_attribute(const char *name, const char *value)
   {
-    xmlAttrPtr newattr = xmlNewProp(this->_handler, (const xmlChar *)name,
-                                    (const xmlChar *)value);
+    xmlAttrPtr newattr = xmlNewProp(this->handler, (const xmlChar *)name, (const xmlChar *)value);
 
     if (newattr == NULL)
     {
@@ -613,7 +608,19 @@ public:
     }
   }
 
-  class attr_iterator : public Node::AttributesPropertyType::iterator_base
+  bool remove_attribute(const char * const name)
+  {
+    for (auto i = this->handler->properties; i; i = i->next) {
+      // Use xmlStrEqual instead of operator== to avoid comparing literal addresses
+      if (xmlStrEqual((xmlChar const * const)name, i->name)) {
+        xmlRemoveProp(i);
+        xmlFreeProp(i);
+        break;
+      }
+    }
+  }
+
+  class AttributeIterator : public Node::AttributesPropertyType::iterator_base
   {
   private:
     xmlAttrPtr attr;
@@ -622,20 +629,19 @@ public:
     bool is_end;
 
   public:
-    attr_iterator(xmlAttrPtr attr, xmlAttrPtr begin, xmlAttrPtr end,
-                  bool is_end)
-        : attr(attr), begin(begin), end(end), is_end(is_end) {}
+    AttributeIterator(xmlAttrPtr attr, xmlAttrPtr begin, xmlAttrPtr end, bool is_end)
+      : attr(attr), begin(begin), end(end), is_end(is_end) {}
 
     Node::Attribute get_node_attr()
     {
-      return Node::Attribute(std::shared_ptr<Node::_Handler::Attribute>(
-          new Node::_Handler::Attribute(attr)));
+      return Node::Attribute(std::shared_ptr<Node::Handler::Attribute>(
+        new Node::Handler::Attribute(attr)));
     }
 
     const Node::Attribute get_node_attr() const
     {
-      return Node::Attribute(std::shared_ptr<Node::_Handler::Attribute>(
-          new Node::_Handler::Attribute(attr)));
+      return Node::Attribute(std::shared_ptr<Node::Handler::Attribute>(
+        new Node::Handler::Attribute(attr)));
     }
 
     virtual void seek_to_next()
@@ -698,35 +704,35 @@ public:
   std::shared_ptr<Node::AttributesPropertyType::iterator_base> begin_attr()
   {
     return std::shared_ptr<Node::AttributesPropertyType::iterator_base>(
-        new Node::_Handler::attr_iterator(
-            this->_handler->properties, this->_handler->properties,
-            (xmlAttrPtr)this->_handler->properties->last, false));
+        new Node::Handler::AttributeIterator(
+            this->handler->properties, this->handler->properties,
+            (xmlAttrPtr)this->handler->properties->last, false));
   }
 
   const std::shared_ptr<Node::AttributesPropertyType::iterator_base>
   begin_attr() const
   {
     return std::shared_ptr<Node::AttributesPropertyType::iterator_base>(
-        new Node::_Handler::attr_iterator(
-            this->_handler->properties, this->_handler->properties,
-            (xmlAttrPtr)this->_handler->properties->last, false));
+        new Node::Handler::AttributeIterator(
+            this->handler->properties, this->handler->properties,
+            (xmlAttrPtr)this->handler->properties->last, false));
   }
 
   std::shared_ptr<Node::AttributesPropertyType::iterator_base> end_attr()
   {
     return std::shared_ptr<Node::AttributesPropertyType::iterator_base>(
-        new Node::_Handler::attr_iterator(
-            NULL, this->_handler->properties,
-            (xmlAttrPtr)this->_handler->properties->last, true));
+        new Node::Handler::AttributeIterator(
+            NULL, this->handler->properties,
+            (xmlAttrPtr)this->handler->properties->last, true));
   }
 
   const std::shared_ptr<Node::AttributesPropertyType::iterator_base>
   end_attr() const
   {
     return std::shared_ptr<Node::AttributesPropertyType::iterator_base>(
-        new Node::_Handler::attr_iterator(
-            NULL, this->_handler->properties,
-            (xmlAttrPtr)this->_handler->properties->last, true));
+        new Node::Handler::AttributeIterator(
+            NULL, this->handler->properties,
+            (xmlAttrPtr)this->handler->properties->last, true));
   }
 };
 

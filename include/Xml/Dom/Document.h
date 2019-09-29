@@ -29,9 +29,9 @@ class Node;
 class Document
 {
 private: // To allow dependency injection change this to protected
-  class _Handler;
-  friend class Document::_Handler;
-  std::shared_ptr<Document::_Handler> _handler;
+  class Handler;
+  friend class Document::Handler;
+  std::shared_ptr<Document::Handler> handler;
 
 public:
   /**

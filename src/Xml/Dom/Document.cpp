@@ -21,30 +21,30 @@ namespace Dom
 {
 
 Document::Document(const char *version)
-    : _handler(new Document::_Handler(version)) {}
+  : handler(new Document::Handler(version)) {}
 
 Document::Document(const std::string &version)
-    : _handler(new Document::_Handler(version.c_str())) {}
+  : handler(new Document::Handler(version.c_str())) {}
 
 Document::~Document() {}
 
 Document::RootNodePropertyType::RootNodePropertyType()
-    : ::un::Xml::Dom::Node(std::shared_ptr<::un::Xml::Dom::Node::_Handler>(
-          new ::un::Xml::Dom::Node::_Handler(NULL, true))) {}
+  : ::un::Xml::Dom::Node(std::shared_ptr<::un::Xml::Dom::Node::Handler>(
+    new ::un::Xml::Dom::Node::Handler(NULL, true))) {}
 
 void Document::parse(const char *data, std::size_t size)
 {
-  this->_handler->parse(data, size);
-  this->root_node._handler->_handler = NULL;
-  this->root_node._handler->is_owner = false;
-  this->_handler->get_root_node(this->root_node);
+  this->handler->parse(data, size);
+  this->root_node.handler->handler = NULL;
+  this->root_node.handler->is_owner = false;
+  this->handler->get_root_node(this->root_node);
 }
 
 void Document::parse_file(const char *path)
 {
-  this->_handler->parse_file(path);
-  this->root_node._handler.reset();
-  this->_handler->get_root_node(this->root_node);
+  this->handler->parse_file(path);
+  this->root_node.handler.reset();
+  this->handler->get_root_node(this->root_node);
 }
 
 Document *Document::RootNodePropertyType::get_parent() const
@@ -55,13 +55,13 @@ Document *Document::RootNodePropertyType::get_parent() const
 
 Node &Document::RootNodePropertyType::get_node()
 {
-  return this->get_parent()->_handler->get_root_node(
+  return this->get_parent()->handler->get_root_node(
       this->get_parent()->root_node);
 }
 
 void Document::RootNodePropertyType::set_node(const Node &node)
 {
-  this->get_parent()->_handler->set_root_node(this->get_parent()->root_node, node);
+  this->get_parent()->handler->set_root_node(this->get_parent()->root_node, node);
 }
 
 Node &Document::RootNodePropertyType::operator=(const Node &node)
@@ -70,16 +70,16 @@ Node &Document::RootNodePropertyType::operator=(const Node &node)
   return this->get_node();
 }
 
-Document::operator std::string() const { return this->_handler->as_string(); }
+Document::operator std::string() const { return this->handler->as_string(); }
 
 std::string Document::to_string(bool pretty_print, bool skip_headers) const
 {
-  return this->_handler->as_string(pretty_print, skip_headers);
+  return this->handler->as_string(pretty_print, skip_headers);
 }
 
 std::ostream &operator<<(std::ostream &_cout, const Document &val)
 {
-  val._handler->write_to(_cout);
+  val.handler->write_to(_cout);
   return _cout;
 }
 

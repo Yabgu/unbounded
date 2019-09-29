@@ -96,6 +96,31 @@ TEST(NodeAttributes, push_back)
   EXPECT_EQ((string)document, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root test=\"testvalue\" test1=\"randomvalue\" test2=\"value\"/>");
 }
 
+TEST(NodeAttributes, remove)
+{
+  Document document("1.0");
+  Node root_node("root");
+
+  EXPECT_EQ(root_node.attributes.count, 0);
+  EXPECT_EQ(root_node.attributes.is_empty, true);
+
+  root_node.attributes.push_back("test", "testvalue");
+
+  EXPECT_EQ(root_node.attributes.count, 1);
+  EXPECT_EQ(root_node.attributes.is_empty, false);
+
+  document.root_node = root_node;
+
+  EXPECT_EQ((string)document, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root test=\"testvalue\"/>");
+
+  root_node.attributes.push_back("test1", "randomvalue");
+  EXPECT_EQ(root_node.attributes.count, 2);
+
+  root_node.attributes.remove("test");
+  EXPECT_EQ(root_node.attributes.count, 1);
+  EXPECT_EQ((string)document, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root test1=\"randomvalue\"/>");
+}
+
 } // namespace
 
 int main(int ac, char *av[])

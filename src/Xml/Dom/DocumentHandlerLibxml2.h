@@ -23,13 +23,13 @@ namespace Xml
 namespace Dom
 {
 
-class Document::_Handler
+class Document::Handler
 {
 private:
   xmlDocPtr _doc;
 
 public:
-  _Handler(const char *version) : _doc(NULL)
+  Handler(const char *version) : _doc(NULL)
   {
     _doc = xmlNewDoc(BAD_CAST version);
     if (_doc == NULL)
@@ -38,7 +38,7 @@ public:
     }
   }
 
-  ~_Handler()
+  ~Handler()
   {
     this->safe_free();
   }
@@ -60,26 +60,26 @@ public:
 
   inline void set_root_node(Node &rnode, const Node &node)
   {
-    if (!node._handler->is_owner)
+    if (!node.handler->is_owner)
     {
       throw std::runtime_error(
           "Node is already owned by another node or document.");
     }
 
-    node._handler->is_owner = false;
+    node.handler->is_owner = false;
 
-    xmlNodePtr old = xmlDocSetRootElement(this->_doc, node._handler->_handler);
+    xmlNodePtr old = xmlDocSetRootElement(this->_doc, node.handler->handler);
 
-    if (rnode._handler != nullptr)
+    if (rnode.handler != nullptr)
     {
-      rnode._handler->is_owner = true;
+      rnode.handler->is_owner = true;
     }
     else if (old != NULL)
     {
       xmlFreeNode(old);
     }
 
-    rnode._handler = node._handler;
+    rnode.handler = node.handler;
   }
 
   inline void write_to(std::ostream &_cout)
@@ -96,8 +96,7 @@ public:
 
   inline void write_to_c(FILE *fp) { xmlDocFormatDump(fp, _doc, 1); }
 
-  inline std::string as_string(bool pretty_print = false,
-                               bool skip_headers = false)
+  inline std::string as_string(bool pretty_print = false, bool skip_headers = false)
   {
     xmlBufferPtr buff = xmlBufferCreate();
     if (buff == NULL)
@@ -172,8 +171,8 @@ public:
       throw std::runtime_error("Document does not have root node");
     }
 
-    rnode._handler = std::shared_ptr<::un::Xml::Dom::Node::_Handler>(
-        new ::un::Xml::Dom::Node::_Handler(root_node, false));
+    rnode.handler = std::shared_ptr<::un::Xml::Dom::Node::Handler>(
+        new ::un::Xml::Dom::Node::Handler(root_node, false));
 
     return rnode;
   }

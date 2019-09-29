@@ -24,16 +24,16 @@ class Document;
 /**
  * Xml Node class.
  *
- * This class is designed as a binding holder for Node::_Handler class
+ * This class is designed as a binding holder for Node::Handler class
  */
 class Node
 {
 private:
   friend class ::un::Xml::Dom::Document;
-  class _Handler;
-  std::shared_ptr<Node::_Handler> _handler;
+  class Handler;
+  std::shared_ptr<Node::Handler> handler;
 
-  explicit Node(const std::shared_ptr<Node::_Handler> &_h);
+  explicit Node(const std::shared_ptr<Node::Handler> &_h);
 
 public:
   /**
@@ -284,11 +284,11 @@ public:
   class Attribute
   {
   private:
-    std::shared_ptr<AttributeBase> _handler;
+    std::shared_ptr<AttributeBase> handler;
 
   public:
     explicit Attribute(const std::shared_ptr<AttributeBase> &handler)
-        : _handler(handler) {}
+      : handler(handler) {}
 
     Attribute &operator=(const char *val);
     Attribute &operator=(const std::string &val);
@@ -424,8 +424,7 @@ public:
      */
     void push_back(const Node::Attribute &);
     void push_back(const std::string &name, const std::string &value);
-    void push_back(const char *name, std::size_t name_size,
-                      const char *value, std::size_t value_size);
+    void push_back(const char *name, std::size_t name_size, const char *value, std::size_t value_size);
     void push_back(const char *name, const char *value);
 
     template <std::size_t namesize, std::size_t valuesize>
@@ -434,6 +433,8 @@ public:
       static_assert(namesize > 0, "Name cannot be empty");
       this->push_back(name, namesize, value, valuesize);
     }
+
+    void remove(const char * const name);
 
     /**
      * Attributes iterator interface class
@@ -457,31 +458,31 @@ public:
     class iterator
     {
     private:
-      std::shared_ptr<iterator_base> _handler;
+      std::shared_ptr<iterator_base> handler;
 
     public:
       explicit iterator(const std::shared_ptr<iterator_base> &iterator_handler)
-          : _handler(iterator_handler) {}
+          : handler(iterator_handler) {}
 
-      void operator++() { this->_handler->seek_to_next(); }
+      void operator++() { this->handler->seek_to_next(); }
 
-      void operator--() { this->_handler->seek_to_previous(); }
+      void operator--() { this->handler->seek_to_previous(); }
 
-      Node::Attribute operator*() { return this->_handler->get_node_attr(); }
+      Node::Attribute operator*() { return this->handler->get_node_attr(); }
 
       const Node::Attribute operator*() const
       {
-        return this->_handler->get_node_attr();
+        return this->handler->get_node_attr();
       }
 
       bool operator==(const iterator &rhs) const
       {
-        return this->_handler->is_equal_to(rhs._handler.get());
+        return this->handler->is_equal_to(rhs.handler.get());
       }
 
       bool operator!=(const iterator &rhs) const
       {
-        return !this->_handler->is_equal_to(rhs._handler.get());
+        return !this->handler->is_equal_to(rhs.handler.get());
       }
     };
 
