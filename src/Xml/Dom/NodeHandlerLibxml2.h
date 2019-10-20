@@ -610,14 +610,18 @@ public:
 
   bool remove_attribute(const char * const name)
   {
+    bool found = false;
     for (auto i = this->handler->properties; i; i = i->next) {
-      // Use xmlStrEqual instead of operator== to avoid comparing literal addresses
-      if (xmlStrEqual((xmlChar const * const)name, i->name)) {
-        xmlRemoveProp(i);
-        xmlFreeProp(i);
+      if (i->type == XML_ATTRIBUTE_NODE && xmlStrEqual((xmlChar const * const)name, i->name)) {
+        if (xmlRemoveProp(i) != 0) {
+          xmlErrorPtr error = xmlGetLastError();
+          throw std::runtime_error(error ? error->message : "remove property failed");
+        }
+        found = true;
         break;
       }
     }
+    return found;
   }
 
   class AttributeIterator : public Node::AttributesPropertyType::iterator_base
