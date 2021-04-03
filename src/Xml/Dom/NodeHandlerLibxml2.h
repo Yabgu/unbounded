@@ -612,9 +612,9 @@ public:
   {
     for (auto i = this->handler->properties; i; i = i->next) {
       // TODO: Test against encodings etc
-      if (xmlStrEqual((xmlChar const * const)name, i->name)) {
+      if (i->type == XML_ATTRIBUTE_NODE
+        && xmlStrEqual((xmlChar const * const)name, i->name)) {
         xmlRemoveProp(i);
-        xmlFreeProp(i);
         break;
       }
     }
