@@ -614,10 +614,10 @@ public:
       // TODO: Test against encodings etc
       if (i->type == XML_ATTRIBUTE_NODE
         && xmlStrEqual((xmlChar const * const)name, i->name)) {
-        xmlRemoveProp(i);
-        break;
+        return xmlRemoveProp(i) == 0;
       }
     }
+    return false;
   }
 
   class AttributeIterator : public Node::AttributesPropertyType::iterator_base
