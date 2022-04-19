@@ -84,7 +84,16 @@
     "*.tcc": "cpp",
     "forward_list": "cpp",
     "filesystem": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "concepts": "cpp",
+    "any": "cpp",
+    "hash_map": "cpp",
+    "bit": "cpp",
+    "compare": "cpp",
+    "numbers": "cpp",
+    "semaphore": "cpp",
+    "stop_token": "cpp",
+    "valarray": "cpp"
   },
   "editor.tabSize": 2,
   "editor.insertSpaces": true,

@@ -12,37 +12,30 @@
 #include <string>
 #include <cstring>
 
-namespace un
-{
-namespace Xml
-{
-namespace Dom
+namespace un::Xml::Dom
 {
 
-class Document;
+struct Document;
 
 /**
  * Xml Node class.
  *
  * This class is designed as a binding holder for Node::Handler class
  */
-class Node
+struct Node
 {
-private:
-  friend class ::un::Xml::Dom::Document;
+  friend struct ::un::Xml::Dom::Document;
   class Handler;
   std::shared_ptr<Node::Handler> handler;
 
-  explicit Node(const std::shared_ptr<Node::Handler> &_h);
+  Node(const std::shared_ptr<Node::Handler> &_h);
 
-public:
   /**
    * Content property class
    * Used for operations on node content
    */
-  class ContentPropertyType
+  struct ContentPropertyType
   {
-  private:
     Node *get_parent() const;
     /**
      * Set content
@@ -66,7 +59,6 @@ public:
      */
     void set_content(const char *rhs);
 
-  public:
     /**
      * Get content as std::string. This will create new string object from the
      * content.
@@ -107,7 +99,7 @@ public:
     }
   };
 
-  friend class ContentPropertyType;
+  friend struct ContentPropertyType;
 
   /// Content property object. Just an interface to node class
   ContentPropertyType content;
@@ -115,11 +107,10 @@ public:
   /**
    * Name property class
    */
-  class NamePropertyType
+  struct NamePropertyType
   {
     Node *get_parent() const;
 
-  public:
     /**
      * Getter of content property. This will create new string object from the
      * content.
@@ -148,18 +139,17 @@ public:
     }
   };
 
-  friend class NamePropertyType;
+  friend struct NamePropertyType;
   /// Name property object. Just an interface to node class
   NamePropertyType name;
 
   /**
    * Count property for number of first child nodes
    */
-  class CountPropertyType
+  struct CountPropertyType
   {
     Node *get_parent() const;
 
-  public:
     /**
      * Getter of count property
      *
@@ -168,11 +158,10 @@ public:
     operator std::size_t() const;
   };
 
-  friend class SizePropertyType;
+  friend struct SizePropertyType;
   /// Count property object. Just an interface to node class
   CountPropertyType count;
 
-public:
   /**
    * Iterator interface class of Xml::Node
    */
@@ -238,7 +227,6 @@ public:
   /// Get node by index
   Node operator[](int index) const;
 
-public:
   /**
    * Remove node from childs list. This will just unbind from this node and will
    * make it free.
@@ -261,7 +249,6 @@ public:
   /// Unbind first element
   Node pop_front();
 
-public:
   /**
    * Xml Attribute interface class. Just a string key-value pair.
    */
@@ -281,12 +268,10 @@ public:
    * Xml attribute class. Just a binding host and interface for xml attribute
    * instance.
    */
-  class Attribute
+  struct Attribute
   {
-  private:
     std::shared_ptr<AttributeBase> handler;
 
-  public:
     explicit Attribute(const std::shared_ptr<AttributeBase> &handler)
       : handler(handler) {}
 
@@ -297,12 +282,10 @@ public:
     /**
      * Node::Attribute name property class
      */
-    class NamePropertyType
+    struct NamePropertyType
     {
-    private:
       Attribute *get_parent() const;
 
-    public:
       bool operator==(const std::string &rhs) const;
       bool operator==(const char *rhs) const;
       operator const char *() const;
@@ -312,19 +295,17 @@ public:
       }
     };
 
-    friend class Attribute::NamePropertyType;
+    friend struct Attribute::NamePropertyType;
     /// Name property object. Just an interface to node class
     NamePropertyType name;
 
     /**
      * Node::Attribute value property class
      */
-    class ValuePropertyType
+    struct ValuePropertyType
     {
-    private:
       Attribute *get_parent() const;
 
-    public:
       Attribute::ValuePropertyType &operator=(const char *val);
       Attribute::ValuePropertyType &operator=(const std::string &val);
       operator const char *() const;
@@ -344,7 +325,7 @@ public:
       }
     };
 
-    friend class Attribute::ValuePropertyType;
+    friend struct Attribute::ValuePropertyType;
     /// Value property object. Just an interface to node class
     ValuePropertyType value;
 
@@ -366,31 +347,27 @@ public:
     }
   };
 
-private:
   Node::Attribute get_attribute_from_index(int index);
   Node::Attribute get_attribute_from_name(const char *name);
   Node::Attribute get_attribute_from_name(const std::string &name);
   bool is_attributes_empty() const;
 
-public:
   /// Node::Attributes property class
-  class AttributesPropertyType
+  struct AttributesPropertyType
   {
     Node *get_parent() const;
     std::size_t get_count() const;
     bool get_is_empty() const;
 
-  public:
     /// Node::Attributes::Count property class
-    class CountPropertyType
+    struct CountPropertyType
     {
       Node::AttributesPropertyType *get_parent() const;
 
-    public:
       operator std::size_t() const;
     };
 
-    friend class SizePropertyType;
+    friend struct SizePropertyType;
     /// Count property object. Just an interface to node class
     CountPropertyType count;
 
@@ -404,18 +381,17 @@ public:
     Node::Attribute operator[](const std::string &name) const;
 
     /// Node::Attributes::IsEmpty property class
-    class IsEmptyPropertyType
+    struct IsEmptyPropertyType
     {
       Node::AttributesPropertyType *get_parent() const;
 
-    public:
       /**
        * Returns true if there is no attribute for current node
        */
       operator bool() const;
     };
 
-    friend class IsEmptyPropertyType;
+    friend struct IsEmptyPropertyType;
     /// IsEmpty property object. Just an interface to node class
     IsEmptyPropertyType is_empty;
 
@@ -439,9 +415,8 @@ public:
     /**
      * Attributes iterator interface class
      */
-    class iterator_base
+    struct iterator_base
     {
-    public:
       virtual ~iterator_base() {}
 
       virtual Node::Attribute get_node_attr() = 0;
@@ -455,12 +430,10 @@ public:
       virtual bool is_equal_to(const iterator_base *) const = 0;
     };
 
-    class iterator
+    struct iterator
     {
-    private:
       std::shared_ptr<iterator_base> handler;
 
-    public:
       explicit iterator(const std::shared_ptr<iterator_base> &iterator_handler)
           : handler(iterator_handler) {}
 
@@ -493,17 +466,15 @@ public:
     const iterator end() const;
   };
 
-  friend class AttributesPropertyType;
+  friend struct AttributesPropertyType;
   AttributesPropertyType attributes;
 
-public:
   iterator begin();
   iterator end();
 
   iterator begin() const;
   iterator end() const;
 
-public:
   Node &operator=(Node &rhs);
 
   bool operator==(const void *const rhs) const;
@@ -520,7 +491,6 @@ public:
     return !this->operator==(rhs);
   }
 
-public:
   /**
    * Empty node constructor
    */
@@ -550,10 +520,6 @@ public:
    * Binds another node to this object
    */
   Node(const Node &bindFrom);
-
-  virtual ~Node();
 };
 
-} // namespace Dom
-} // namespace Xml
-} // namespace un
+}

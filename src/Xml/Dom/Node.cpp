@@ -34,8 +34,6 @@ Node::Node(const Node &bindFrom) : handler(bindFrom.handler) {}
 Node::Node(const char *name, const char *content)
     : handler(new Node::Handler(name, content)) {}
 
-Node::~Node() {}
-
 Node &Node::operator=(Node &rhs)
 {
   this->handler = rhs.handler;

@@ -27,7 +27,7 @@ namespace Dom
 // TODO: Give option to either throw exception or give ability to create new node
 static Node empty_node;
 
-class Document;
+struct Document;
 
 class Node::Handler
 {
@@ -36,8 +36,8 @@ public:
   friend class Node::Handler::iterator;
 
 private:
-  friend class ::un::Xml::Dom::Node;
-  friend class ::un::Xml::Dom::Document;
+  friend struct ::un::Xml::Dom::Node;
+  friend struct ::un::Xml::Dom::Document;
   xmlNodePtr handler;
   bool is_owner;
 
@@ -608,12 +608,12 @@ public:
     }
   }
 
-  bool remove_attribute(const char * const name)
+  bool remove_attribute(const char * name)
   {
     for (auto i = this->handler->properties; i; i = i->next) {
       // TODO: Test against encodings etc
       if (i->type == XML_ATTRIBUTE_NODE
-        && xmlStrEqual((xmlChar const * const)name, i->name)) {
+        && xmlStrEqual((const xmlChar *)name, i->name)) {
         return xmlRemoveProp(i) == 0;
       }
     }

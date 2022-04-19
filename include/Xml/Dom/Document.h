@@ -18,35 +18,26 @@
 #include <memory>
 #include <string>
 
-namespace un
+namespace un::Xml::Dom
 {
-namespace Xml
-{
-namespace Dom
-{
-class Node;
 
-class Document
+struct Document
 {
-private: // To allow dependency injection change this to protected
+public: // To allow dependency injection change this to protected
   class Handler;
   friend class Document::Handler;
   std::shared_ptr<Document::Handler> handler;
 
-public:
   /**
    * Root node property class
    */
-  class RootNodePropertyType : public Node
+  struct RootNodePropertyType : public Node
   {
-  private:
-    friend class Document;
     Document *get_parent() const;
     Node &get_node();
     void set_node(const Node &node);
     RootNodePropertyType();
 
-  public:
     /**
      * Setter of root node.
      *
@@ -58,7 +49,6 @@ public:
   /// Root node property object. Just an interface to node class
   RootNodePropertyType root_node;
 
-public:
   /**
    * Parse document from raw data (UTF-8 Encoding will be used)
    *
@@ -91,7 +81,6 @@ public:
     this->parse_file(path.c_str());
   }
 
-public:
   /**
    * Create new xml document
    */
@@ -99,9 +88,6 @@ public:
 
   Document(const std::string &version = "1.0");
 
-  virtual ~Document();
-
-public:
   operator std::string() const;
   std::string to_string(bool pretty_print = false, bool skip_headers = true) const;
 
@@ -110,6 +96,4 @@ public:
 
 std::ostream &operator<<(std::ostream &_cout, const Document &val);
 
-} // namespace Dom
-} // namespace Xml
-} // namespace un
+}

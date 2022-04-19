@@ -26,8 +26,6 @@ Document::Document(const char *version)
 Document::Document(const std::string &version)
   : handler(new Document::Handler(version.c_str())) {}
 
-Document::~Document() {}
-
 Document::RootNodePropertyType::RootNodePropertyType()
   : ::un::Xml::Dom::Node(std::shared_ptr<::un::Xml::Dom::Node::Handler>(
     new ::un::Xml::Dom::Node::Handler(NULL, true))) {}
