@@ -17,11 +17,7 @@
 #include <memory>
 #include <string>
 
-namespace un
-{
-namespace Xml
-{
-namespace Dom
+namespace un::Xml::Dom
 {
 
 // TODO: Give option to either throw exception or give ability to create new node
@@ -736,6 +732,4 @@ public:
   }
 };
 
-} // namespace Dom
-} // namespace Xml
-} // namespace un
+}

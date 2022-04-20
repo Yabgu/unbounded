@@ -10,11 +10,7 @@
 #include "NodeHandlerLibxml2.h"
 #include <cstdlib>
 
-namespace un
-{
-namespace Xml
-{
-namespace Dom
+namespace un::Xml::Dom
 {
 
 Node::Node(const std::shared_ptr<Node::Handler> &_h) : handler(_h) {}
@@ -573,6 +569,4 @@ Node::AttributesPropertyType::end() const
       this->get_parent()->handler->end_attr());
 }
 
-} // namespace Dom
-} // namespace Xml
-} // namespace un
+}

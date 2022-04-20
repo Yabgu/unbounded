@@ -16,11 +16,7 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
-namespace un
-{
-namespace Xml
-{
-namespace Dom
+namespace un::Xml::Dom
 {
 
 class Document::Handler
@@ -178,6 +174,4 @@ public:
   }
 };
 
-} // namespace Dom
-} // namespace Xml
-} // namespace un
+}
